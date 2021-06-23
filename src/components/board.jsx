@@ -8,17 +8,15 @@ import Cell from './cell.jsx';
 // TODO Add timer
 //  Tie in Win check to timer
 
-// TODO Add win check
-
 
 class Board extends React.Component {
   state = {
     boardState: startBoardState(this.props.height, this.props.width, this.props.mines),
     gameState: 'playing',
     minesRemaining: this.props.mines,
-    totalCells: this.props.heigh * this.props.width,
+    totalCells: this.props.height * this.props.width,
     cellsRevealed: 0,
-    mineTotal: 0,
+    mineTotal: this.props.mines,
   };
 
   componentDidUpdate(prevProps) {
@@ -47,7 +45,6 @@ class Board extends React.Component {
     })
   };
 
-  // TODO fix win trigger
   handleClick = (x, y) => {
     if(this.state.boardState[x][y].isRevealed || this.state.boardState[x][y].isFlagged) {
       return null;
@@ -68,12 +65,17 @@ class Board extends React.Component {
     this.setState({
       boardState: updatedBoard,
       cellsRevealed: revealedCells,
-    });
-    if(this.state.cellsRevealed === (this.props.totalCells - this.state.mineTotal)) {
+    }, this.checkWin);
+  };
+
+  checkWin = () => {
+    console.log('Revealed cells: ' + this.state.cellsRevealed);
+    console.log('Total cells: ' + this.state.totalCells);
+    if(this.state.cellsRevealed === (this.state.totalCells - this.state.mineTotal)) {
       this.setState({ gameState: 'won!' });
       console.log('winner winner');
     }
-  };
+  }
 
   // TODO add right-click on revealed tile to reveal everything around it if enough flags
   handleContextMenu = (e, x, y) => {
